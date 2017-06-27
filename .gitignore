@@ -1,0 +1,6 @@
+*.o
+procon
+packages/
+install/
+src/.*
+src/cmake-build-debug/
