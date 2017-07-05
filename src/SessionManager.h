@@ -2,6 +2,7 @@
 #define SRC_SESSIONMANAGER_H
 
 #include <ISession.h>
+#include <IParsedType.h>
 #include <TestSession.h>
 #include <SynchronizedQueue.h>
 #include <Constants.h>
@@ -30,7 +31,8 @@ public:
 
     void start(){
         //add test session TODO:  remove later
-        addSession(TestSession::createSession(Constants::TEST_CLIENTID1));
+        //addSession(TestSession::createSession(Constants::TEST_CLIENTID1));
+
         setIsRunning(true);
         if(0 != m_threadpool.start()){
             throw std::runtime_error("SessionManager: failed to start threadpool");
@@ -40,12 +42,13 @@ public:
 
     void addSession(const std::shared_ptr<ISession>& sessPtr) {
         bslmt::LockGuard<bslmt::Mutex> guard(&m_sessionMap_mutex);
+        //there should not be duplicate ClientId's being added
         assert(m_sessionsMap.find(sessPtr->clientId()) == m_sessionsMap.end());
         m_sessionsMap[sessPtr->clientId()] = sessPtr;
         std::cout << "session: " << sessPtr->clientId() << std::endl;
     }
 
-    void addJob(const ClientId& cid, const std::shared_ptr<Parsed>& job){
+    void addJob(const ClientId& cid, const std::shared_ptr<IParsedType>& job){
         if(m_sessionsMap.find(cid) == m_sessionsMap.end()){
             std::cerr << "ISession with Clientid: " << cid << "does not exist.\n";
             return;

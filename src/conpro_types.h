@@ -8,7 +8,7 @@
 #include <string>
 
 typedef std::string ClientId;
-typedef std::string Parsed;
+//typedef std::string Parsed;
 
 
 #endif //SRC_TYPES_H

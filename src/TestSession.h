@@ -6,6 +6,7 @@
 #define SRC_SESSION_H
 
 #include <ISession.h>
+#include <IParsedType.h>
 #include <conpro_types.h>
 #include <bslmt_lockguard.h>
 #include <bslmt_mutex.h>
@@ -29,8 +30,9 @@ public:
         //TODO call this and SessionManager::addSession in main.
     }
 
-    bool addJob(const std::shared_ptr<Parsed> &job) override {
+    bool addJob(const std::shared_ptr<IParsedType> &job) override {
         //add job and signal if queue went from empty to non-empty
+        std::cout << __func__ << "-> " << *job << "\n";
         bslmt::LockGuard<bslmt::Mutex> guard(&m_sessionMutex);
         bool wasEmpty = jobs_queued.empty();
         jobs_queued.emplace_back(job);
@@ -43,10 +45,13 @@ public:
             std::swap(jobs_in_progress, jobs_queued);
         }
 
-        for (const auto& pptr: jobs_in_progress){
+        for (const auto& pptr: jobs_in_progress) {
             std::cout << "TestSession: processing : "
                       << *pptr << "\n";
         }
+
+        //clear jobs_in_progress when finished
+        jobs_in_progress.clear();
     }
 
     const ClientId& clientId() const {
@@ -60,8 +65,8 @@ public:
 private:
     ClientId m_cid;
     bslmt::Mutex m_sessionMutex;
-    std::vector<std::shared_ptr<Parsed>> jobs_in_progress;
-    std::vector<std::shared_ptr<Parsed>> jobs_queued;
+    std::vector<std::shared_ptr<IParsedType>> jobs_in_progress;
+    std::vector<std::shared_ptr<IParsedType>> jobs_queued;
     std::atomic_bool m_inProgress{false};
 
 };

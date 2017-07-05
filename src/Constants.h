@@ -7,7 +7,7 @@
 
 
 namespace Constants {
-    //InputProcessor configs
+    //StdinStringProcessor configs
     static const int IP_MIN_THREADS = 2;
     static const int IP_MAX_THREADS = 10;
     static const int IP_MAX_IDLETIME = 5000;  //in milliseconds
@@ -18,6 +18,8 @@ namespace Constants {
     static const int SM_MAX_IDLETIME = 5000;  //in milliseconds
 
     static const char *TEST_CLIENTID1 = "test1";
+    static const char *TEST_CLIENTID2 = "test2";
+    static const char *TEST_CLIENTID3 = "test3";
 }
 
 

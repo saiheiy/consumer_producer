@@ -1,27 +1,35 @@
 #ifndef SRC_APPLICATION_H
 #define SRC_APPLICATION_H
 
-#include <InputProcessor.h>
+#include <IMessageProcessor.h>
 #include <SessionManager.h>
-#include <TestSession.h>
+#include <IRequestServer.h>
 #include <string>
 #include <iostream>
 
 class Application {
 public:
-    Application(SessionManager& in_sessionManager, InputProcessor& in_inputProcessor)
+    Application(SessionManager& in_sessionManager, IMessageProcessor& in_msgProcessor)
             :m_sessionManager(in_sessionManager),
-            m_inputProcessor(in_inputProcessor)
+            m_msgProcessor(in_msgProcessor)
     {}
 
     void run(){
         m_sessionManager.start();
-        m_inputProcessor.runMainLoop();
+        for(auto rs_ptr: m_requestServerArr){
+            rs_ptr->start();
+        }
+        m_msgProcessor.runMainLoop();
+    }
+
+    void addRequestServer(IRequestServer *rsptr){
+        m_requestServerArr.emplace_back(rsptr);
     }
 
 private:
     SessionManager& m_sessionManager;
-    InputProcessor& m_inputProcessor;
+    IMessageProcessor& m_msgProcessor;
+    std::vector<IRequestServer *> m_requestServerArr;
 };
 
 

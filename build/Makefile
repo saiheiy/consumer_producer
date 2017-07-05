@@ -1,4 +1,4 @@
-ROOT=/Users/saiheiyeung/git/producer_consumer
+ROOT=/Users/saiheiyeung/git/consumer_producer
 TARGET=procon
 SRCDIR=../src
 OBJS=main.o
