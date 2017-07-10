@@ -1,6 +1,7 @@
 #ifndef SRC_SYNCHRONIZEDQUEUE_H
 #define SRC_SYNCHRONIZEDQUEUE_H
 
+#include <PT.h>
 #include <bslmt_lockguard.h>
 #include <bslmt_mutex.h>
 
@@ -40,11 +41,16 @@ public:
 
     void rotateOne() {
         bslmt::LockGuard<bslmt::Mutex> guard(&m_mutex);
-        if ( size() <= 1){
+        PT() << "HERE: inside rotateOne\n";
+        PT() << "HERE: " << __func__ << ":" << __LINE__ << "\n";
+        if ( m_queue.size() < 1){
+            PT() << "HERE: " << __func__ << ":" << __LINE__ << "\n";
             return;
         }
+        PT() << "HERE: " << __func__ << ":" << __LINE__ << "\n";
         m_queue.emplace(std::move(m_queue.front()));
         m_queue.pop();
+        PT() << "HERE: end off rotateOne\n";
     }
 
 

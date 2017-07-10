@@ -4,7 +4,7 @@ project(src)
 set(CMAKE_CXX_STANDARD 11)
 
 set(SOURCE_FILES
-        main.cpp Application.cpp Application.h StdinStringProcessor.cpp StdinStringProcessor.h Constants.h SessionManager.cpp SessionManager.h TestSession.cpp TestSession.h conpro_types.h SynchronizedQueue.cpp SynchronizedQueue.h ISession.h IMessageProcessor.h IParser.h IParsedType.h TestParser.h TestParsedType.h IRequestServer.h TestRequestServer.h)
+        main.cpp Application.cpp Application.h StdinStringProcessor.cpp StdinStringProcessor.h Constants.h SessionManager.cpp SessionManager.h TestSession.cpp TestSession.h conpro_types.h SynchronizedQueue.cpp SynchronizedQueue.h ISession.h IMessageProcessor.h IParser.h IParsedType.h TestParser.h TestParsedType.h IRequestServer.h TestRequestServer.h JsonParser.cpp JsonParser.h JsonType.cpp JsonType.h PT.h)
 
 
 add_executable(conpro ${SOURCE_FILES})

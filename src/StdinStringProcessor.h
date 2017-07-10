@@ -38,14 +38,14 @@ public:
     }
 
     void runParseInput(const std::string& line) {
-        std::cout << "Parsing " << line << std::endl;
+        PT() << "Parsing " << line << std::endl;
         std::shared_ptr<IParsedType> job = m_parser.parse(line);
         m_sessionManager.addJob(job->getClientId(), job);
     }
 
     void runMainLoop() override {
         std::string line;
-        while(std::cin >> line){
+        while(std::getline(std::cin, line)){
             m_threadpool.enqueueJob(bdlf::BindUtil::bind(&StdinStringProcessor::runParseInput, this, line));
         }
     }

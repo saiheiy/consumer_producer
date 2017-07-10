@@ -45,12 +45,12 @@ public:
         //there should not be duplicate ClientId's being added
         assert(m_sessionsMap.find(sessPtr->clientId()) == m_sessionsMap.end());
         m_sessionsMap[sessPtr->clientId()] = sessPtr;
-        std::cout << "session: " << sessPtr->clientId() << std::endl;
+        PT() << "session: " << sessPtr->clientId() << std::endl;
     }
 
     void addJob(const ClientId& cid, const std::shared_ptr<IParsedType>& job){
         if(m_sessionsMap.find(cid) == m_sessionsMap.end()){
-            std::cerr << "ISession with Clientid: " << cid << "does not exist.\n";
+            PT() << "ISession with Clientid: " << cid << "does not exist.\n";
             return;
         }
         std::shared_ptr<ISession>& sess_ptr = m_sessionsMap.at(cid);
@@ -79,9 +79,10 @@ public:
 
 private:
     void listenForUpdates(){
-        std::cout << "SessionManager: listening for updates\n";
+        PT() << "SessionManager: listening for updates\n";
         while(isRunning){
             {
+                PT() << "HERE check m_sessionsToProcessQueue is empty "  << "\n";
                 bslmt::LockGuard<bslmt::Mutex> guard(&m_cv_mutex);
                 while(m_sessionsToProcessQueue.empty()) {
                     m_cv.wait(&m_cv_mutex);
@@ -91,9 +92,12 @@ private:
             assert(m_sessionsMap.find(cid) != m_sessionsMap.end());
             std::shared_ptr<ISession>& sessPtr = m_sessionsMap.at(cid);
             if (sessPtr->inProgress()) {
+                PT() << "HERE cid: " << cid << ", sessionsToProcessQueue Length: " << m_sessionsToProcessQueue.size() << "\n";
                 m_sessionsToProcessQueue.rotateOne();
+                PT() << "HERE cid: " << cid << ", after rotateOne Length: " << m_sessionsToProcessQueue.size() << "\n";
             }
             else {
+                PT() << "HERE enqueueJob " << cid << "\n";
                 m_threadpool.enqueueJob(bdlf::BindUtil::bind(&ISession::processJobs,
                                                              sessPtr.get()));
                 m_sessionsToProcessQueue.dequeue();

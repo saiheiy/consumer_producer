@@ -8,6 +8,7 @@
 #include <ISession.h>
 #include <IParsedType.h>
 #include <conpro_types.h>
+#include <PT.h>
 #include <bslmt_lockguard.h>
 #include <bslmt_mutex.h>
 #include <vector>
@@ -32,7 +33,7 @@ public:
 
     bool addJob(const std::shared_ptr<IParsedType> &job) override {
         //add job and signal if queue went from empty to non-empty
-        std::cout << __func__ << "-> " << *job << "\n";
+        PT() << __func__ << "-> " << *job << "\n";
         bslmt::LockGuard<bslmt::Mutex> guard(&m_sessionMutex);
         bool wasEmpty = jobs_queued.empty();
         jobs_queued.emplace_back(job);
@@ -43,15 +44,18 @@ public:
         {
             bslmt::LockGuard<bslmt::Mutex> guard(&m_sessionMutex);
             std::swap(jobs_in_progress, jobs_queued);
+            m_inProgress = true;
         }
 
+
         for (const auto& pptr: jobs_in_progress) {
-            std::cout << "TestSession: processing : "
+            PT() << "HERE TestSession: processing : "
                       << *pptr << "\n";
         }
 
         //clear jobs_in_progress when finished
         jobs_in_progress.clear();
+        m_inProgress = false;
     }
 
     const ClientId& clientId() const {
