@@ -7,6 +7,7 @@
 
 #include <ISession.h>
 #include <IParsedType.h>
+#include <IRequestServer.h>
 #include <conpro_types.h>
 #include <PT.h>
 #include <bslmt_lockguard.h>
@@ -22,13 +23,13 @@ using namespace BloombergLP;
 
 class TestSession : public ISession {
 public:
-    TestSession(const ClientId& cid)
-        :m_cid(cid)
+    TestSession(const ClientId& cid, IRequestServer* respPtr)
+        :m_cid(cid),
+         m_respPtr(respPtr)
     {}
 
-    static std::shared_ptr<TestSession> createSession(const ClientId& cid){
-        return std::make_shared<TestSession>(cid);
-        //TODO call this and SessionManager::addSession in main.
+    static std::shared_ptr<TestSession> createSession(const ClientId& cid, IRequestServer* resp){
+        return std::make_shared<TestSession>(cid, resp);
     }
 
     bool addJob(const std::shared_ptr<IParsedType> &job) override {
@@ -40,7 +41,7 @@ public:
         return wasEmpty;
     }
 
-    void processJobs() {
+    void processJobs() override {
         {
             bslmt::LockGuard<bslmt::Mutex> guard(&m_sessionMutex);
             std::swap(jobs_in_progress, jobs_queued);
@@ -48,10 +49,11 @@ public:
         }
 
 
-        for (const auto& pptr: jobs_in_progress) {
-            PT() << "HERE TestSession: processing : "
-                      << *pptr << "\n";
-        }
+//        for (const auto& pptr: jobs_in_progress) {
+//            PT() << "HERE TestSession: processing : "
+//                      << *pptr << "\n";
+//        }
+        m_respPtr->batchProcessJobs(jobs_in_progress);
 
         //clear jobs_in_progress when finished
         jobs_in_progress.clear();
@@ -68,6 +70,7 @@ public:
 
 private:
     ClientId m_cid;
+    IRequestServer* m_respPtr;
     bslmt::Mutex m_sessionMutex;
     std::vector<std::shared_ptr<IParsedType>> jobs_in_progress;
     std::vector<std::shared_ptr<IParsedType>> jobs_queued;

@@ -41,16 +41,11 @@ public:
 
     void rotateOne() {
         bslmt::LockGuard<bslmt::Mutex> guard(&m_mutex);
-        PT() << "HERE: inside rotateOne\n";
-        PT() << "HERE: " << __func__ << ":" << __LINE__ << "\n";
         if ( m_queue.size() < 1){
-            PT() << "HERE: " << __func__ << ":" << __LINE__ << "\n";
             return;
         }
-        PT() << "HERE: " << __func__ << ":" << __LINE__ << "\n";
         m_queue.emplace(std::move(m_queue.front()));
         m_queue.pop();
-        PT() << "HERE: end off rotateOne\n";
     }
 
 
